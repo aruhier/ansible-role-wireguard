@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: wireguard
   author: Anthony Ruhier (Anthony25)
   description: Install and configure Wireguard
   issue_tracker_url: https://github.com/Anthony25/ansible-role-wireguard/issues
