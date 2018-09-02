@@ -1,0 +1,17 @@
+---
+
+- name: Restart systemd-networkd
+  service:
+    name: "systemd-networkd"
+    state: "restarted"
+
+- name: Restart wg-quick profiles
+  service:
+    name: "{{ wireguard_wg_quick_service_prefix }}{{ item.key }}"
+    state: "restarted"
+  with_dict: wireguard_profiles
+  when: |
+    "dump_conf_{{ item.key }} is defined and dump_conf_{{ item.key }}.changed"
+    "and item.key.enable"
+
+# vim: set ts=2 sw=2:

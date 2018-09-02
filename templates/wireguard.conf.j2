@@ -1,0 +1,51 @@
+#{{ ansible_managed }}
+
+[Interface]
+{% if profile.use_wg_quick %}
+    {% if profile.addresses|default([]) %}
+        Address = {{ profile.addresses|join(", ") }}
+    {% endif %}
+    {% if profile.dns|default([]) %}
+        DNS = {{ profile.dns|join(", ") }}
+    {% endif %}
+    {% if profile.mtu|default([]) %}
+        MTU = {{ profile.mtu }}
+    {% endif %}
+    {% if profile.table|default([]) %}
+        Table = {{ profile.table }}
+    {% endif %}
+    {% if profile.postup|default() %}
+        PostUp = {{ profile.postup }}
+    {% endif %}
+    {% if profile.postdown|default() %}
+        PostDown = {{ profile.postdown }}
+    {% endif %}
+{% endif %}
+{% if profile.listen_port|default() %}
+    ListenPort = {{ profile.listen_port }}
+{% endif %}
+PrivateKey = {{ profile.private_key }}
+{% if profile.fwmark|default() %}
+    FwMark = {{ profile.fwmark }}
+{% endif %}
+
+{% for peer in profile.peers %}
+    [Peer]
+    {% if peer.comment|default() %}
+        # {{ peer.comment }}
+    {% endif %}
+    PublicKey = {{ peer.public_key }}
+    {% if peer.preshared_key|default() %}
+        PresharedKey = {{ peer.preshared_key }}
+    {% endif %}
+    AllowedIPs = {{ peer.allowed_ips|join(", ") }}
+    {% if peer.endpoint|default() %}
+        Endpoint = {{ peer.endpoint }}
+    {% endif %}
+    {% if peer.persistent_keepalive|default() %}
+        PersistentKeepalive = {{ peer.persistent_keepalive }}
+    {% endif %}
+
+{% endfor %}
+
+{% if profile.additional_opts|default() %}{{ profile.additional_opts }}{% endif %}

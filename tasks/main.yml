@@ -1,0 +1,38 @@
+---
+
+- include: dist_vars.yml
+
+- include: install.yml
+
+- name: Set boolean method check to all profiles
+  set_fact:
+    wireguard_profiles_bool_methods: "{{
+      wireguard_profiles_bool_methods|default({})|combine({
+        item.key: {
+          'use_wg_quick': item.value.method == 'wg-quick',
+          'use_systemd_networkd': item.value.method == 'systemd-networkd',
+          'use_wg_conf_dump': item.value.method == 'wireguard-conf'
+        }
+      })
+    }}"
+  with_dict: "{{ wireguard_profiles }}"
+
+- name: Update profiles with boolean methods
+  set_fact:
+    wireguard_profiles: "{{ wireguard_profiles|combine(wireguard_profiles_bool_methods, recursive=True) }}"
+
+- include: "wg_quick.yml profile={{ item.value }} profile_name={{ item.key }}"
+  with_dict: "{{ wireguard_profiles }}"
+  when: item.value.use_wg_quick
+
+- include: >
+    systemd_networkd.yml
+    profile={{ item.value }} profile_name={{ item.key }}
+  with_dict: "{{ wireguard_profiles }}"
+  when: item.value.use_systemd_networkd
+
+- include: "wg_conf.yml profile={{ item.value }} profile_name={{ item.key }}"
+  with_dict: "{{ wireguard_profiles }}"
+  when: item.value.use_wg_conf_dump
+
+# vim: set ts=2 sw=2:

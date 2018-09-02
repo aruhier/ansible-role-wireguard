@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+#{{ ansible_managed }}
+
+instance_name=${RC_SVCNAME#*.}
+command="/usr/bin/wg-quick"
+required_files="/etc/wireguard/${instance_name}.conf"
+
+
+depend() {
+    need localmount net
+    use dns
+    after bootmisc
+}
+
+start() {
+    ebegin "Starting ${SVCNAME}"
+    ${command} up $instance_name
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${SVCNAME}"
+    ${command} down $instance_name
+    eend $?
+}

@@ -1,0 +1,12 @@
+---
+
+- name: Install link definition
+  template:
+    src: "systemd_networkd.netdev.j2"
+    dest: "/etc/systemd/network/{{ profile_name }}.netdev"
+    mode: 0660
+    owner: "systemd-network"
+    group: "root"
+  notify: Restart systemd-networkd
+
+# vim: set ts=2 sw=2:

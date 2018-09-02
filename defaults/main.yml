@@ -1,0 +1,25 @@
+---
+
+wireguard_profiles: {}
+  # example:
+  #   method: # wg-quick, systemd-networkd, wireguard-conf
+  #   enable: True
+  #   addresses: []
+  #   dns: []
+  #   mtu:
+  #   table:
+  #   post_up:
+  #   post_down:
+  #   listen_port:
+  #   private_key:
+  #   fwmark:
+  #   additional_opts:
+  #   peers:
+  #     - comment: "host.example.tld"
+  #       public_key:
+  #       preshared_key:
+  #       allowed_ips: []
+  #       endpoint:
+  #       persistent_keepalive:
+
+# vim: set ts=2 sw=2:

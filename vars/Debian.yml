@@ -1,0 +1,9 @@
+---
+
+wireguard_packages:
+  - wireguard
+
+wireguard_conf_path: "/etc/wireguard"
+wireguard_wg_quick_service_prefix: "wg-quick@"
+
+# vim: set ts=2 sw=2:

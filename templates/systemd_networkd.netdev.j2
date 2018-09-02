@@ -1,0 +1,42 @@
+[NetDev]
+Name={{ profile_name }}
+Kind=wireguard
+Description=Wireguard {{ profile_name }}
+{% if profile.mtu|default([]) %}
+    MTUBytes = {{ profile.mtu }}
+{% endif %}
+{% if profile.table|default([]) %}
+    VRF = {{ profile.table }}
+{% endif %}
+
+[WireGuard]
+{% if profile.listen_port|default() %}
+    ListenPort = {{ profile.listen_port }}
+{% endif %}
+PrivateKey = {{ profile.private_key }}
+{% if profile.fwmark|default() %}
+    FwMark = {{ profile.fwmark }}
+{% endif %}
+
+{% for peer in profile.peers %}
+    [WireGuardPeer]
+    {% if peer.comment|default() %}
+        # {{ peer.comment }}
+    {% endif %}
+    PublicKey = {{ peer.public_key }}
+    {% if peer.preshared_key|default() %}
+        PresharedKey = {{ peer.preshared_key }}
+    {% endif %}
+    {% for i in peer.allowed_ips %}
+        AllowedIPs = {{ i }}
+    {% endfor %}
+    {% if peer.endpoint|default() %}
+        Endpoint = {{ peer.endpoint }}
+    {% endif %}
+    {% if peer.persistent_keepalive|default() %}
+        PersistentKeepalive = {{ peer.persistent_keepalive }}
+    {% endif %}
+
+{% endfor %}
+
+{% if profile.additional_opts|default() %}{{ profile.additional_opts }}{% endif %}
