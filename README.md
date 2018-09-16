@@ -104,7 +104,7 @@ Example Playbook
           public_key: "yEvY7Jm8hgWLE64ocDMpwvcE3MH27xac6u55I2R2tik="
           allowed_ips:
             - "192.0.2.1"
-            - "2001:db8::1/127"
+            - "2001:db8::1"
           endpoint: "203.0.113.5"
           persistent_keepalive: 25
 
