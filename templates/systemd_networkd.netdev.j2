@@ -21,7 +21,7 @@ PrivateKey = {{ profile.private_key }}
 {% for peer in profile.peers %}
     [WireGuardPeer]
     {% if peer.comment|default() %}
-        # {{ peer.comment }}
+# {{ peer.comment }}
     {% endif %}
     PublicKey = {{ peer.public_key }}
     {% if peer.preshared_key|default() %}
