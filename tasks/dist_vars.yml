@@ -1,7 +1,6 @@
 ---
-
 - name: Include distribution specific variables
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ item }}"
     name: _os_specific
   with_first_found:
@@ -11,10 +10,8 @@
     - "default.yml"
 
 - name: Set OS specific vars if undefined
-  set_fact: {
-    "{{ item.key }}":
-      "{{ hostvars[inventory_hostname][item.key] | default(item.value) }}"
-  }
+  ansible.builtin.set_fact:
+    "{{ item.key }}": "{{ hostvars[inventory_hostname][item.key] | default(item.value) }}"
   with_dict: "{{ _os_specific }}"
 
 # vim: set ts=2 sw=2:

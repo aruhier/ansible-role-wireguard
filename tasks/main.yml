@@ -1,45 +1,52 @@
 ---
+- name: Import distribution-specific variables
+  ansible.builtin.import_tasks: dist_vars.yml
 
-- import_tasks: dist_vars.yml
-
-- import_tasks: install.yml
+- name: Import installation tasks
+  ansible.builtin.import_tasks: install.yml
 
 - name: Set boolean method check to all profiles
-  set_fact:
-    wireguard_profiles_bool_methods: "{{
-      wireguard_profiles_bool_methods|default({})|combine({
-        item.key: {
-          'use_wg_quick': item.value.method == 'wg-quick',
-          'use_systemd_networkd': item.value.method == 'systemd-networkd',
-          'use_wg_conf_dump': item.value.method == 'wireguard-conf'
-        }
-      })
-    }}"
+  ansible.builtin.set_fact:
+    wireguard_profiles_bool_methods:
+      "{{
+        wireguard_profiles_bool_methods | default({}) | combine({
+          item.key: {
+            'use_wg_quick': item.value.method == 'wg-quick',
+            'use_systemd_networkd': item.value.method == 'systemd-networkd',
+            'use_wg_conf_dump': item.value.method == 'wireguard-conf'
+          }
+        })
+      }}"
   with_dict: "{{ wireguard_profiles }}"
+  tags:
+    - skip_ansible_lint # Required as it doesn't interpret properly the multi-line Jinja template
 
-- name: Update profiles with boolean methods
-  set_fact:
-    wireguard_profiles: "{{ wireguard_profiles|combine(wireguard_profiles_bool_methods, recursive=True) }}"
+- name: Set profiles with boolean methods
+  ansible.builtin.set_fact:
+    wireguard_profiles_bool: "{{ wireguard_profiles | combine(wireguard_profiles_bool_methods, recursive=True) }}"
 
-- include_tasks: wg_quick.yml
+- name: Include 'wg_quick' tasks
+  ansible.builtin.include_tasks: wg_quick.yml
   vars:
     profile: "{{ item.value }}"
     profile_name: "{{ item.key }}"
-  with_dict: "{{ wireguard_profiles }}"
+  with_dict: "{{ wireguard_profiles_bool }}"
   when: item.value.use_wg_quick
 
-- include_tasks: systemd_networkd.yml
+- name: Include 'systemd_networkd' tasks
+  ansible.builtin.include_tasks: systemd_networkd.yml
   vars:
     profile: "{{ item.value }}"
     profile_name: "{{ item.key }}"
-  with_dict: "{{ wireguard_profiles }}"
+  with_dict: "{{ wireguard_profiles_bool }}"
   when: item.value.use_systemd_networkd
 
-- include_tasks: wg_conf.yml
+- name: Include 'wg_conf' tasks
+  ansible.builtin.include_tasks: wg_conf.yml
   vars:
     profile: "{{ item.value }}"
     profile_name: "{{ item.key }}"
-  with_dict: "{{ wireguard_profiles }}"
+  with_dict: "{{ wireguard_profiles_bool }}"
   when: item.value.use_wg_conf_dump
 
 # vim: set ts=2 sw=2:

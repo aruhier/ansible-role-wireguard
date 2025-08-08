@@ -1,5 +1,4 @@
 ---
-
 wireguard_packages:
   - wireguard-tools
   - wireguard-dkms

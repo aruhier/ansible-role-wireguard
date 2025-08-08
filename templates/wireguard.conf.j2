@@ -1,51 +1,51 @@
+#jinja2: lstrip_blocks: True
 #{{ ansible_managed }}
 
 [Interface]
-{% if profile.use_wg_quick %}
-    {% if profile.addresses|default([]) %}
+{% if profile.use_wg_quick -%}
+    {% if profile.addresses|default([]) -%}
         Address = {{ profile.addresses|join(", ") }}
     {% endif %}
-    {% if profile.dns|default([]) %}
+    {% if profile.dns|default([]) -%}
         DNS = {{ profile.dns|join(", ") }}
     {% endif %}
-    {% if profile.mtu|default([]) %}
+    {% if profile.mtu|default([]) -%}
         MTU = {{ profile.mtu }}
     {% endif %}
-    {% if profile.table|default([]) %}
+    {% if profile.table|default([]) -%}
         Table = {{ profile.table }}
     {% endif %}
-    {% if profile.postup|default() %}
+    {% if profile.postup|default() -%}
         PostUp = {{ profile.postup }}
     {% endif %}
-    {% if profile.postdown|default() %}
+    {% if profile.postdown|default() -%}
         PostDown = {{ profile.postdown }}
     {% endif %}
 {% endif %}
-{% if profile.listen_port|default() %}
+{% if profile.listen_port|default() -%}
     ListenPort = {{ profile.listen_port }}
 {% endif %}
 PrivateKey = {{ profile.private_key }}
-{% if profile.fwmark|default() %}
+{% if profile.fwmark|default() -%}
     FwMark = {{ profile.fwmark }}
 {% endif %}
 
-{% for peer in profile.peers %}
+{% for peer in profile.peers -%}
     [Peer]
-    {% if peer.comment|default() %}
+    {% if peer.comment|default() -%}
         # {{ peer.comment }}
-    {% endif %}
+    {% endif -%}
     PublicKey = {{ peer.public_key }}
-    {% if peer.preshared_key|default() %}
+    {% if peer.preshared_key|default() -%}
         PresharedKey = {{ peer.preshared_key }}
-    {% endif %}
+    {% endif -%}
     AllowedIPs = {{ peer.allowed_ips|join(", ") }}
-    {% if peer.endpoint|default() %}
+    {% if peer.endpoint|default() -%}
         Endpoint = {{ peer.endpoint }}
     {% endif %}
-    {% if peer.persistent_keepalive|default() %}
+    {% if peer.persistent_keepalive|default() -%}
         PersistentKeepalive = {{ peer.persistent_keepalive }}
     {% endif %}
-
 {% endfor %}
 
 {% if profile.additional_opts|default() %}{{ profile.additional_opts }}{% endif %}

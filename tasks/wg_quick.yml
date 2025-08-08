@@ -1,30 +1,38 @@
 ---
-
 - name: Install profile
-  template:
+  ansible.builtin.template:
     src: "wireguard.conf.j2"
     dest: "{{ wireguard_conf_path }}/{{ profile_name }}.conf"
-    mode: 0640
-  register: "dump_conf_{{ profile_name }}"
+    mode: "0640"
+  register: install_profile
 
 - name: Install wg_quick service for openrc
-  template:
+  ansible.builtin.template:
     src: "wg_quick.openrc.j2"
     dest: "/etc/init.d/wg-quick"
-    mode: 0755
+    mode: "0755"
   when: ansible_service_mgr == "openrc"
 
 - name: Create a service specific to this profile for openrc
-  file:
+  ansible.builtin.file:
     src: "/etc/init.d/wg-quick"
     dest: "/etc/init.d/wg-quick.{{ profile_name }}"
     state: "link"
   when: ansible_service_mgr == "openrc"
 
 - name: Enable profile
-  service:
+  ansible.builtin.service:
     name: "{{ wireguard_wg_quick_service_prefix }}{{ profile_name }}"
     enabled: true
   when: profile.enable is defined and profile.enable
+
+- name: "Restart wg-quick@{{ profile_name }}"
+  ansible.builtin.service:
+    name: "wg-quick@{{ profile_name }}"
+    state: "restarted"
+  when:
+    - profile.enable is defined
+    - profile.enable
+    - install_profile.changed
 
 # vim: set ts=2 sw=2:

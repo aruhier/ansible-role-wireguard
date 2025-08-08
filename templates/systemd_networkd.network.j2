@@ -1,0 +1,11 @@
+#jinja2: lstrip_blocks: True
+[Match]
+Name={{ profile_name }}
+
+[Network]
+{% for address in profile.addresses -%}
+    Address={{ address }}
+{% endfor -%}
+{% for dns in profile.dns | default([]) -%}
+    DNS={{ dns }}
+{% endfor -%}
